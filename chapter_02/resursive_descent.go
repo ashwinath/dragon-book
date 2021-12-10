@@ -65,3 +65,32 @@ func (p *parser) Brackets() error {
 	p.s2()
 	return p.err
 }
+
+func (p *parser) s3() {
+	switch p.token {
+	case '0':
+		p.match('0')
+		p.s3()
+		p.match('1')
+	case '1':
+		// terminal case
+		return
+	default:
+		p.err = fmt.Errorf("unexpected syntax")
+	}
+}
+
+//  S -> 0 S 1 | 0 1
+func (p *parser) SomeBinaryPattern() error {
+	p.getToken()
+	p.s3()
+	if p.position != len(p.value) {
+		p.err = fmt.Errorf(
+			"did not make it to the end of value, current position: %d, len: %d, previous error: %s",
+			p.position,
+			len(p.value),
+			p.err,
+		)
+	}
+	return p.err
+}
